@@ -1,1 +1,24 @@
-<h1>Posts</h1>
+<main>
+
+
+  <h4><%= @post.title %></h4>
+  <img src="/assets/envelope-silhouette.jpg" alt="Post Image" class="post-img">
+
+  <p><%= @post.body %></p>
+
+
+  <p><strong>Created At:</strong> <%= time_ago_in_words(@post.created_at) %> ago</p>
+  <p><strong>Update At:</strong> <%= time_ago_in_words(@post.updated_at) %> ago</p>
+
+  <%= link_to 'Edit', edit_post_path(@post) %>
+
+  <%=
+    link_to(
+      'Delete',
+      post_path(@post),
+      method: :delete,
+      data: {confirm: 'Are you sure?'}
+    )
+  %>
+
+</main>

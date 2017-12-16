@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>BlogPost</title>
+    <title>Blog Post</title>
     <%= csrf_meta_tags %>
 
     <%= stylesheet_link_tag    'application', media: 'all' %>
@@ -10,13 +10,17 @@
 
   <body>
     <header>
-    <nav class="navbar navbar-light">
+    <nav class="navbar navbar-light d-inline d-sm-inline-flex">
         <a class="navbar-brand" href="/">
-          <img src="/assets/post_imag.jpeg" height="50" class="d-inline-block align-top">
+          <img src="/assets/post_imag.jpeg" height="30" class="d-inline-block align-top">
         </a>
-      </div>
+        <div class="menu float-right">
+          <a href="/">Home</a>
+          |
+          <%= link_to 'New Post', new_post_path %>
+        </div>
     </nav>
-    <hr>
+    <hr ="menu-bar">
   </header>
 
 
