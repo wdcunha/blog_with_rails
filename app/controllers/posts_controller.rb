@@ -1,7 +1,7 @@
 class PostsController < ApplicationController
 before_action :authenticate_user!, except: [:show, :index]
 before_action :find_post, only: [:show, :edit, :update, :destroy]
-# before_action :authorize_user!, only: [:edit, :update, :destroy]
+before_action :authorize_user!, only: [:edit, :update, :destroy]
 
 def new
   @post = Post.new
@@ -57,5 +57,13 @@ end
   def find_post
     @post = Post.find params[:id]
   end
+
+  def authorize_user!
+    unless can?(:manage, @post)
+      flash[:danger] = "Access denied!"
+      redirect_to home_path
+    end
+  end
+
 
 end

@@ -1,11 +1,15 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
+  namespace :admin do
+    resources :dashboard, only: [:index]
+  end
+
   # resource :posts #, only: [:new, :create, :destroy]
 
   resource :session, only: [:new, :create, :destroy]
 
-  resources :users, only: [:new, :create]
+  resources :users #, only: [:new, :create]
 
   get('/', { to: 'posts#index', as: :home})
   get('/posts/new', { to: 'posts#new', as: :new_post})
