@@ -10,8 +10,11 @@ class ApplicationController < ActionController::Base
 
   helper_method :user_signed_in?
 
+  # def current_user
+  #   @current_user ||=User.find_by(id: session[:user_id])
+  # end
   def current_user
-    @current_user ||=User.find_by(id: session[:user_id])
+    @current_user ||= User.find_by_auth_token!(cookies[:auth_token]) if cookies[:auth_token]
   end
 
   helper_method :current_user

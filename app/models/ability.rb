@@ -32,5 +32,8 @@ class Ability
       user == post.user
     end
 
+    can :manage, User do |post|
+      user == post.user
+    end
   end
 end

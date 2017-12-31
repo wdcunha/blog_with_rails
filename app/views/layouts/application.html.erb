@@ -20,7 +20,7 @@
             <%= link_to 'New Post', new_post_path %>
             |
             <% if user_signed_in? %>
-              <span>Hello, <%= current_user.first_name %>!</span>
+              <span>Hello, <%= link_to current_user.first_name, user_path(current_user) %>!</span>
               <% if current_user.is_admin? %>
             |
                 <%= link_to 'Dashboard', admin_dashboard_index_path %>

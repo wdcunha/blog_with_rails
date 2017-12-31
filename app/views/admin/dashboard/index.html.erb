@@ -1,24 +1,28 @@
 <main>
-  <h1>Admin Dashboard</h1>
+  <div class="container ">
+    <h1>Admin Dashboard</h1>
 
-  <table>
-    <tbody>
-      <tr>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Email</th>
-        <th>Created At</th>
-        <th>Is Admin?</th>
-      </tr>
-      <% @users.each do |user| %>
+    <table class="table table-sm table-hover table-dark">
+      <thead>
         <tr>
-          <td><%= link_to user.first_name, edit_user_path(@users) %></td>
-          <td><%= user.last_name %></td>
-          <td><%= user.email %></td>
-          <td><%= user.created_at %></td>
-          <td><%= user.is_admin? %></td>
+          <th scope="col" >First Name</th>
+          <th scope="col" >Last Name</th>
+          <th scope="col" >Email</th>
+          <th scope="col" >Created At</th>
+          <th scope="col" >Is Admin?</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% @users.each do |user| %>
+        <tr>
+          <td scope="row" ><%= link_to user.first_name, edit_user_path(@users) %></td>
+          <td scope="row" ><%= user.last_name %></td>
+          <td scope="row" ><%= user.email %></td>
+          <td scope="row" ><%= user.created_at %></td>
+          <td scope="row" ><%= user.is_admin? %></td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 </main>
