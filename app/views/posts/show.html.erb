@@ -23,4 +23,44 @@
         data: {confirm: 'Are you sure?'})
     %>
   <% end %>
+
+  <h3>Comments</h3>
+
+  <%= form_for [@post, @comment] do |f| %>
+    <% if @comment.errors.present? %>
+      <p>
+        <%= @comment.errors.full_messages.join(', ') %>
+      </p>
+    <% end %>
+
+    <div>
+      <%= f.text_area :body %>
+    </div>
+
+    <%= f.submit %>
+  <% end %>
+
+  <div class="comment-list">
+      <% @comments.each do |comment| %>
+        <div class="comment-list-item">
+          <p><%= comment.body %></p>
+          <p><%= "By #{@post.user&.full_name}" || "[deleted]" %></p>
+          <p>
+            <strong>Created At:</strong>
+            <%= time_ago_in_words(comment.created_at) %> ago
+          </p>
+          <% if can?(:manage, @post) %>
+            <%= link_to(
+              'Delete',
+              post_comment_path(@post, comment),
+              data: {confirm: 'Are you sure?'},
+              method: :delete
+            ) %>
+          <% end %>
+
+        </div>
+      <% end %>
+  </div>
+
+
 </main>

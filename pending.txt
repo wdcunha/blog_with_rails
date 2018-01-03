@@ -1,0 +1,6 @@
+1) letter opener
+2) ability.rb: can manage for User
+3) finish dashboard (open screen to edit user)
+4) Eduardo: how he did with comment nested in routes
+5) line 55 from show.html.erb (post_comment_path)
+6) need to open an view page to test the link sent and edit view

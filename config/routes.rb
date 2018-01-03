@@ -1,8 +1,4 @@
 Rails.application.routes.draw do
-  get 'password_resets/new'
-
-  get 'password_resets/edit'
-
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
   namespace :admin do
@@ -16,7 +12,10 @@ Rails.application.routes.draw do
   resources :users #, only: [:new, :create]
 
   resources :account_activations, only: [:edit]
-  resources :password_resets, only: [:new, :create, :edit, :update]
+  resources :password_resets
+
+  resources :comments, only: [:create, :destroy]
+
 
   get('/', { to: 'posts#index', as: :home})
   get('/posts/new', { to: 'posts#new', as: :new_post})
@@ -26,6 +25,7 @@ Rails.application.routes.draw do
   delete('/posts/:id', to: 'posts#destroy')
   get('/posts/:id/edit', to: 'posts#edit', as: :edit_post)
   patch('/posts/:id', to: 'posts#update')
+
 
 
   # get('/', to: 'posts#index')

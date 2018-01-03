@@ -32,8 +32,12 @@ class Ability
       user == post.user
     end
 
-    can :manage, User do |post|
-      user == post.user
+    can :manage, Comment do |comment|
+      user == comment.user 
+    end
+
+    can :manage, User do |user|
+      user == user.user
     end
   end
 end

@@ -26,7 +26,8 @@ end
   end
 
   def show
-
+    @comments = @post.comments.order(created_at: :desc)
+    @comment = Comment.new
   end
 
   def edit
