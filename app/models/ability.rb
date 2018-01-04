@@ -33,11 +33,11 @@ class Ability
     end
 
     can :manage, Comment do |comment|
-      user == comment.user 
+      comment.user == user || comment.post.user == user
     end
-
-    can :manage, User do |user|
-      user == user.user
-    end
+    #
+    # can :manage, User do |user|
+    #   user == user.user
+    # end
   end
 end
