@@ -29,6 +29,20 @@ before_action :find_user, only: [:show, :edit, :update, :destroy]
       redirect_to home_path
     end
   end
+
+  def edit_password
+
+  end
+
+  def update_password
+    if params[:user][:password].empty?
+      @user.errors.add(:current_password, "can't be empty")
+      render 'edit_password'
+    elseif @
+
+    end
+  end
+
   private
   def user_params
     params.require(:user).permit(

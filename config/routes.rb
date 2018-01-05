@@ -20,6 +20,8 @@ Rails.application.routes.draw do
   end
 
   get('/', { to: 'posts#index', as: :home})
+  get('/users/:id/edit_password', {to: 'users#edit_password', as: :edit_password})
+  patch('/users/:id/update_password', {to: 'users#update_password', as: :update_password})
   # get('/posts/new', { to: 'posts#new', as: :new_post})
   # post('/posts', { to: 'posts#create', as: :posts })
   # get('/posts', { to: 'posts#index'})
@@ -34,7 +36,7 @@ Rails.application.routes.draw do
   # get('/posts/new', to: 'posts#new', as: :new_post)
   # post('/posts/', to: 'posts#create', as: :posts)
   # get('/posts/', to: 'posts#index')
-  # get('/posts/:id', to: 'posts#show', as: :post)
+  # get('/:token', to: 'posts#show', as: :post)
 
   resources :password_resets, except: [:index] #only: [:new, :create, :edit, :update]
 end

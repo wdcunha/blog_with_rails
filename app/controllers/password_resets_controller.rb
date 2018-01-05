@@ -56,6 +56,11 @@ class PasswordResetsController < ApplicationController
     end
   end
 
+  # Logs in the given user.
+  def log_in(user)
+    session[:user_id] = user.id
+  end
+
   # Checks expiration of reset token.
   def check_expiration
     if @user.password_reset_expired?

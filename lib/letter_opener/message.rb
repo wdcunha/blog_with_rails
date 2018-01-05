@@ -101,6 +101,7 @@ module LetterOpener
 
     def encoding
       body.respond_to?(:encoding) ? body.encoding : "utf-8"
+      
     end
 
     def auto_link(text)
