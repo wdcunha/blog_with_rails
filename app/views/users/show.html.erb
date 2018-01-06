@@ -1,0 +1,22 @@
+<main class="container w-50">
+
+  <h4>User: <%= @user.full_name %></h4>
+
+  <table class="table">
+    <tr>
+      <td scope="row">First Name:</td>
+      <td scope="row"><%= @user.first_name %></td>
+    </tr>
+    <tr>
+      <td scope="row">Last Name:</td>
+      <td scope="row"><%= @user.last_name%></td>
+    </tr>
+    <tr>
+      <td scope="row">E-mail:</td>
+      <td scope="row"><%= @user.email%></td>
+    </tr>
+  </table>
+
+  <p><%= link_to '| Edit |', edit_user_path(@user) %></p>
+
+</main>
