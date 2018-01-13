@@ -2,7 +2,12 @@ class User < ApplicationRecord
   attr_accessor :reset_token
   has_many :comments, dependent: :nullify
   has_many :posts, dependent: :nullify
+
+  has_many :likes, dependent: :nullify
+  has_many :liked_posts, through: :likes, source: :post
+
   before_save   :downcase_email
+
   has_secure_password
 #
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i

@@ -15,7 +15,7 @@
       <tbody>
         <% @users.each do |user| %>
         <tr>
-          <td scope="row" ><%= link_to user.first_name, edit_user_path(@users) %></td>
+          <td scope="row" ><%= link_to user.first_name, edit_user_path(user) %></td>
           <td scope="row" ><%= user.last_name %></td>
           <td scope="row" ><%= user.email %></td>
           <td scope="row" ><%= user.created_at %></td>
