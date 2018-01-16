@@ -28,11 +28,22 @@ class Ability
     #
     # See the wiki for details:
     # https://github.com/CanCanCommunity/cancancan/wiki/Defining-Abilities
-    can :manage, Post do |post|
+
+    alias_action :create, :read, :update, :destroy, :to => :crud
+
+    can :crud, Post do |post|
       user == post.user
     end
 
-    can :manage, Comment do |comment|
+    can :like, Post do |post|
+      post.user != user
+    end
+
+    can :crud, Like do |like|
+      like.user == user
+    end
+
+    can :crud, Comment do |comment|
       comment.user == user || comment.post.user == user
     end
     #

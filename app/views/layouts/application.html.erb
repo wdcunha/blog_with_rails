@@ -20,7 +20,8 @@
             <%= link_to 'New Post', new_post_path %>
             |
             <% if user_signed_in? %>
-              <!-- <span>Hello, <%= link_to current_user.first_name, user_path(current_user) %>!</span> -->
+              <%= link_to 'My liked Posts', posts_path({liked: true}) %>
+              |
               <span>Hello, <%= link_to current_user.first_name, edit_user_path(current_user) %>!</span>
               <% if current_user.is_admin? %>
             |

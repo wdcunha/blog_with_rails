@@ -8,7 +8,13 @@ def new
 end
 
   def index
-    @posts = Post.all.order(created_at: :desc)
+    @liked = params[:liked]
+    if @liked
+      @posts = current_user.liked_posts
+    else
+      @posts = Post.all.order(created_at: :desc)
+    end
+
   end
 
   def create
@@ -28,6 +34,7 @@ end
   def show
     @comments = @post.comments.order(created_at: :desc)
     @comment = Comment.new
+    @user_like = current_user.likes.find_by_post_id(@post) if user_signed_in?
   end
 
   def edit
