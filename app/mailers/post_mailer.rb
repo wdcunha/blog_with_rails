@@ -1,2 +1,0 @@
-class PostMailer < ApplicationMailer
-end
