@@ -8,6 +8,7 @@ class CommentsController < ApplicationController
     @comment.user = current_user
 
     if @comment.save
+      CommentMailer.notify_post_owner(@comment).deliver_later(wait: 1.minute)
       redirect_to post_path(@post)
     else
       @comments = @post.comments.order(created_at: :desc)
