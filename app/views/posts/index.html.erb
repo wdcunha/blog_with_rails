@@ -1,33 +1,30 @@
-<main class="container">
+<main class="container postAll">
 
-    <h3><%= @liked ? 'Liked Posts' : 'All Posts' %></h3>
+    <h3 class="title_page"><%= @liked ? 'Liked Posts' : 'All Posts' %></h3>
 
     <% if !@liked %>
-      <div class="row">
-        <div class="col-md-8">
-          <img src="/assets/envelope-silhouette.jpg" alt="Post Image" class="big-img">
-          <h3>Title</h3>
-          <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-        </div>
-        <div class="col-md-4">
-          <h3>Most Liked</h3>
-          <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-        </div>
-      </div>
-      <div class="row w-100">
+      <div class="post-container">
         <% @posts.each do |post| %>
-          <div class="col-md-4">
+          <div class="post-list-item">
             <img src="/assets/wordpress-post.jpg" alt="Post Image">
             <h4><%= link_to post.title, post_path(post) %></h4>
             <p class="card-text"><%= post.body %></p>
           </div>
         <% end %>
+        <aside class="most-liked">
+          <h3 class="title-most-liked">Most Liked</h3>
+          <ol>
+            <% @liked_posts.each do |post| %>
+              <li><%= link_to post.title, post_path(post) %></li>
+            <%end%>
+          </ol>
+        </aside>
       </div>
 
     <% else %>
       <% @posts.each do |post| %>
-        <div class="col-md-12">
-          <%= link_to post.title, post_path(post) %>  
+        <div class="mult-post col-md-12">
+          <%= link_to post.title, post_path(post) %>
         </div>
       <% end %>
     <% end %>

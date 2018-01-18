@@ -13,6 +13,7 @@ end
       @posts = current_user.liked_posts
     else
       @posts = Post.all.order(created_at: :desc)
+      @liked_posts = @posts.sort_by { |post| post.likes.count }.reverse.first(7)
     end
 
   end
@@ -23,6 +24,7 @@ end
     @post.user = current_user
 
     if @post.save
+      PostReminderJob.set(wait: 1.minute).perform_later(@post.id)
       # redirect_to @post
       redirect_to posts_path
 

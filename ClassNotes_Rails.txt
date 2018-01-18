@@ -694,4 +694,96 @@ https://myaccount.google.com/lesssecureapps?pli=1
 turned on
 
 
+
+>>>>>>> API
+
+1) added respond_to in question_controller
+2) you can call the page using the correspondent extension (html, json, xml)
+
+*** doing a separeted API
+1) rails g controller  Api::V1::Questions --no--assets --no-helper
+2) routes creating namespace
+   added code for default (JSON in this case)
+3) added action index in question controller in V1
+4) gem file added faraday
+   Bundle
+5) created folder api_client at the root from the awesome project
+6) created file cliente.rb and included code for faraday
+   ruby client.rb to see content --- rails s needed
+7) installed postman in chrome
+8) added code to question controller in V1
+9) created file inside folder views/v1/questions
+   index.json
+   added code to this file
+10) gemfile
+    gem 'active_model_serializers'
+    bundle
+11) rails g serializer question title:string body:text
+    tested in postman using a question: http://localhost:3000/api/v1/questions/302
+    added belongs_to user
+    added class UserSerializer
+    added has many
+    added function author_full_name
+12) created in postman a new tab for Question Create
+13) added function create in question_controller api
+14) disable token with:
+    rails g controller Api::Application --no-assets --no-helper --skip-template-engine
+15) added < Api to question_controller Api
+16) added text for ApplicationController Api
+17) rails g migration add_api_key_to_user api_key:string
+18) included line in the file generated with index
+19) created a private method generate api key
+    loop to check if there's no one else using the same key
+20) added before create for generate_api_key
+21) included methods in ApplicationController api:
+    current_user
+    api_key
+22) added line in show of QuestionsController api
+23) added
+
+
+
+
+
+[1] pry(main)> SecureRAndom
+NameError: uninitialized constant SecureRAndom
+from (pry):1:in `__pry__'
+[2] pry(main)> SecureRandom
+=> SecureRandom
+[3] pry(main)> SecureRandom.hex
+=> "114adfd69323117437f890016274f3cf"
+[4] pry(main)> SecureRandom.hex(32)
+=> "6780671a4f695c49251112a2d3a2b1c54136b046cd5991a7c571eb491bcd7d78"
+
+[12] pry(main)> u = User.last
+  User Load (26.7ms)  SELECT  "users".* FROM "users" ORDER BY "users"."id" DESC LIMIT $1  [["LIMIT", 1]]
++-----+-------+-------+-------+-------+-------+-------+-------+------+
+| id  | fi... | email | pa... | cr... | up... | la... | is... | api_ |
++-----+-------+-------+-------+-------+-------+-------+-------+------+
+| 122 | We... | wd... | $2... | 20... | 20... | Di... | false |      |
++-----+-------+-------+-------+-------+-------+-------+-------+------+
+1 row in set
+[13] pry(main)> u.send(:generate_api_key)
+  User Exists (0.5ms)  SELECT  1 AS one FROM "users" WHERE "users"."api_key" = $1 LIMIT $2  [["api_key", "77a75da8cf0821dcb8e0b14cf6ada7174ad2e1944f9f29832c8bcd7e483d674b"], ["LIMIT", 1]]
+=> nil
+[14] pry(main)> u.api_key
+=> "77a75da8cf0821dcb8e0b14cf6ada7174ad2e1944f9f29832c8bcd7e483d674b"
+[15] pry(main)> u.save
+   (0.2ms)  BEGIN
+  User Exists (0.5ms)  SELECT  1 AS one FROM "users" WHERE "users"."email" = $1 AND ("users"."id" != $2) LIMIT $3  [["email", "wdcunha@gmail.com"], ["id", 122], ["LIMIT", 1]]
+  SQL (333.2ms)  UPDATE "users" SET "updated_at" = $1, "api_key" = $2 WHERE "users"."id" = $3  [["updated_at", "2018-01-15 23:45:10.349616"], ["api_key", "77a75da8cf0821dcb8e0b14cf6ada7174ad2e1944f9f29832c8bcd7e483d674b"], ["id", 122]]
+   (15.4ms)  COMMIT
+=> true
+
+
+fetch('http://localhost:3000/api/v1/questions')
+	.then(response => response.text())
+	.then(text => console.log(text))
+
+**** better to use due to the format as array
+  fetch('http://localhost:3000/api/v1/questions')
+	.then(response => response.json())
+	.then(data => console.log(data))
+
+
 # bump
