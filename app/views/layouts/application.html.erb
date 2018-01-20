@@ -10,14 +10,14 @@
 
   <body>
     <header class="container">
-      <nav class="navbar navbar-light d-inline d-sm-inline-flex">
+      <nav id="nav-bootstrap-override" class="navbar navbar-light d-inline d-sm-inline-flex">
           <a class="navbar-brand" href="/">
             <img src="/assets/post_imag.jpeg" height="30" class="d-inline-block align-top">
           </a>
           <div class="menu float-right">
-            <a href="/">Home</a>
+            <a href="/" class="bar">Home</a>
             |
-            <%= link_to 'New Post', new_post_path %>
+            <%= link_to 'New Post', new_post_path, :class => 'bar' %>
             |
             <% if user_signed_in? %>
               <%= link_to 'My liked Posts', posts_path({liked: true}) %>
