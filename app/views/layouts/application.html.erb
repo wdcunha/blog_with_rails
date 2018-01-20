@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>BlogPost</title>
+    <title>Blog Post</title>
     <%= csrf_meta_tags %>
 
     <%= stylesheet_link_tag    'application', media: 'all' %>
@@ -9,6 +9,58 @@
   </head>
 
   <body>
-    <%= yield %>
+    <header class="container">
+      <nav id="nav-bootstrap-override" class="navbar navbar-light d-inline d-sm-inline-flex">
+          <a class="navbar-brand" href="/">
+            <img src="/assets/post_imag.jpeg" height="30" class="d-inline-block align-top">
+          </a>
+          <div class="menu float-right">
+            <a href="/" class="bar">Home</a>
+            |
+            <%= link_to 'New Post', new_post_path, :class => 'bar' %>
+            |
+            <% if user_signed_in? %>
+              <%= link_to 'My liked Posts', posts_path({liked: true}) %>
+              |
+              <span>Hello, <%= link_to current_user.first_name, edit_user_path(current_user) %>!</span>
+              <% if current_user.is_admin? %>
+            |
+                <%= link_to 'Dashboard', admin_dashboard_index_path %>
+              <% end %>
+            |
+              <%= link_to( 'Sign Out', session_path,
+                  method: :delete,
+                  data: {confirm: 'Do you really want to sign out?'})
+              %>
+            <% else %>
+              <%= link_to 'Sign In', new_session_path %>
+            |
+              <%= link_to 'Sign Up', new_user_path %>
+            <% end %>
+          </div>
+      </nav>
+    </header>
+
+      <div class="container">
+
+        <% if flash[:success].present? %>
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= flash[:success] %>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <% elsif flash[:danger].present? %>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= flash[:danger] %>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <% end %>
+      </div>
+
+      <%= yield %>
   </body>
+  <footer class="container sm">W© 2018 ==> Bootcamp CodeCore Cohort 21</footer>
 </html>

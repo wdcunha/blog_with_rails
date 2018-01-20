@@ -1,0 +1,789 @@
+
+
+gem install rails --nod-rdoc --no-ri
+
+atom ~/.railsrc
+
+
+http://localhost:3000/rails/info/routes
+>>>rails routes (type this to show routes on terminal)
+app.home_path
+app.about_path
+app.new_question_path
+app.about_url
+
+>>> atom ~/railsrc: (put the lines below inside railsrc)
+-T
+-d postgresql
+--skip-turbolinks
+**** bundle >>> run this command after this edition
+
+
+** When creating inside another git repository, it's needed to delete
+.git file, what will do it to use of the parente structure
+>>rails new will create git repo files
+
+1) rails new project_name
+   rails new project_name -T -d postgresql  (if need db - use Postgres as our database instead of the default one: SQLite)
+2) check if it has a own git repo, if not, delete .git
+5) rails g controller question --no-helper --no-assets
+3) rails g model product title body:text
+4) rails db:create and
+   rails db:migrate
+6) create actions at controller(s)
+7) create erb files
+5) rails s  (runs the server)
+9) edit file new in view
+10) add the option for the nav in application.html.erb inside (layouts)
+11) implement in routes file an option for new
+
+
+rails db:migrate
+rails g migration add_view_count_to_questions  view_count:integer
+rails g migration add_view_count_to_questions  view_count:integer
+rails g migration add_last_name_to_users  last_name:string
+rails g migration ChangePriceInProducts
+https://codequizzes.wordpress.com/2013/06/06/rails-migrations-to-add-a-column-and-change-column-type/
+
+
+****rails g controller question --no-helper --no-assets
+create controller with less options inside assets folder
+
+### database.yml ---> this is the file where the project keeps the name of DB
+
+>>> change gem file:
+gem 'faker', github: 'stympy/faker' (isolated in general lines)
+
+
+gem 'pg'  (instead of sqlite3)
+gem 'pry'
+gem 'pry-doc'
+gem 'pry-rails'
+gem 'hirb'   >>>> format datas in table to be seen in pry
+**** after is needed to run bundle
+
+rails db:create
+rails db:migrate
+
+rails g migration add_like_count_to_question like_count:integer
+
+rails db:migrate:status  ----> see the order of files that is running and the order matters
+
+rails g migration remove_like_count_from_questions  like_count:integer
+rails db:migrate
+
+atom ~/.pryrc  (copied lines from steeve to show datas in table on pry)
+
+**** rails c ---> runs pry  (c = console)
+q = Question.new(title: "what is your name?", body: "I got curves")
+q.save
+Question.all ---> read all datas from db
+Question.first
+Question.last
+Question.find_by(id:1)
+Question.find_by_sql("Select * from question")
+Question.find(id:1)
+Question.where("id>1")
+Question.where("title ILIKE ?", "%what%")
+Question.where.not("body ILIKE ?", "%curve%").where("title ILIKE ?", "%how%")
+q.title
+q.id
+
+Question.order(created_at: :desc)
+Question.order(created_at: :desc).limit(1)
+Question.order(created_at: :desc).limit(2).offset(1)
+q.update(title: "was it a carrot?", body: "I'm thinking of a veggie")
+
+q.errors.full_messages  (helps to see what is wrong)
+ls Question (list all methods we can use with this class)
+
+q = Question.new
+q.save
+q.save!
+q.errors # this is a Hash of arrays that include errors messages: {:title => ["can't be blank"]}
+q.errors.full_messages # this will give an array of full messages: ["Title can't be blank"]
+
+>>> Faker  ---> populate db with some datas
+can use on pry
+used seeds.rb file to populate db
+rails db:seed
+
+
+>>> validates  ----> just run in the model
+on pry,
+  reaload!
+
+  q = Question.new title: "Yo, body 'There is a monkey in my yard"
+  [21] pry(main)> q.save
+     (0.3ms)  BEGIN
+    Question Exists (0.6ms)  SELECT  1 AS one FROM "questions" WHERE "questions"."title" = $1 LIMIT $2  [["title", "Yo, body 'There is a monkey in my yard"], ["LIMIT", 1]]
+     (0.3ms)  ROLLBACK
+  => false
+  [22] pry(main)> q.errors.full_messages
+  => ["Body can't be blank",
+   "Body is too short (minimum is 5 characters)",
+   "View count is not a number",
+   "Title should not have a monkey! ð\u009F\u0099\u0088"]
+
+
+   [3] pry(main)> q2 = Question.new({title: "a   "})
+
+
+#### callbacks
+http://api.rubyonrails.org/
+
+form_tag  ---> simple form with pure html
+form_for  ---> specific to work with model
+
+q = Question.new
+q2 = Question.last
+
+[3] pry(main)> q.persisted?
+=> false
+[4] pry(main)> q2.persisted?
+=> true
+
+
+>>>> rails g model answer body:text question:references
+      ---> creates dependence between registers
+
+pry(main)> a = Answer.new(body: 'Carrot', question: Question.all.sample)
+Question Load (29.6ms)  SELECT "questions".* FROM "questions"
++----+--------+-------------+------------+------------+
+| id | body   | question_id | created_at | updated_at |
++----+--------+-------------+------------+------------+
+|    | Carrot | 10          |            |            |
++----+--------+-------------+------------+------------+
+
+pry(main)> a.save
+   (0.5ms)  BEGIN
+  SQL (1.1ms)  INSERT INTO "answers" ("body", "question_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"  [["body", "Carrot"], ["question_id", 10], ["created_at", "2017-12-11 17:37:38.167505"], ["updated_at", "2017-12-11 17:37:38.167505"]]
+   (3.6ms)  COMMIT
+=> true
+
+a.create_question(title: 'What is this!?', body: 'asdjfalsdjflajdfla')
+a.save
+
+pry(main)> Answer.all
+
+
+**** when we use << (sheval) it doesn't change anything in db, but when we use = it will
+replace data in db
+
+pry(main)> q.answers << Answer.new(body: 'Lemon Pie')
+   (0.4ms)  BEGIN
+  SQL (0.8ms)  INSERT INTO "answers" ("body", "question_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"  [["body", "Lemon Pie"], ["question_id", 15], ["created_at", "2017-12-11 18:05:51.432424"], ["updated_at", "2017-12-11 18:05:51.432424"]]
+   (18.1ms)  COMMIT
++----+------------+-------------+-----------------+------------------+
+| id | body       | question_id | created_at      | updated_at       |
++----+------------+-------------+-----------------+------------------+
+| 3  | Carot cake | 15          | 2017-12-11 1... | 2017-12-11 18... |
+| 4  | Lemon Pie  | 15          | 2017-12-11 1... | 2017-12-11 18... |
++----+------------+-------------+-----------------+------------------+
+2 rows in set
+[20] pry(main)> q.answer_ids
+=> [3, 4]
+[21] pry(main)> q.answer_ids = [1,2,3]
+  Answer Load (1.2ms)  SELECT "answers".* FROM "answers" WHERE "answers"."id" IN (1, 2, 3)
+   (0.4ms)  BEGIN
+  SQL (1.0ms)  UPDATE "answers" SET "question_id" = NULL WHERE "answers"."question_id" = $1 AND "answers"."id" = 4  [["question_id", 15]]
+  SQL (4.9ms)  UPDATE "answers" SET "question_id" = $1, "updated_at" = $2 WHERE "answers"."id" = $3  [["question_id", 15], ["updated_at", "2017-12-11 18:10:43.019053"], ["id", 1]]
+  SQL (2.1ms)  UPDATE "answers" SET "question_id" = $1, "updated_at" = $2 WHERE "answers"."id" = $3  [["question_id", 15], ["updated_at", "2017-12-11 18:10:43.033553"], ["id", 2]]
+   (4.2ms)  COMMIT
+=> [1, 2, 3]
+
+[23] pry(main)> q.answers
++----+------------+-------------+-----------------+------------------+
+| id | body       | question_id | created_at      | updated_at       |
++----+------------+-------------+-----------------+------------------+
+| 3  | Carot cake | 15          | 2017-12-11 1... | 2017-12-11 18... |
+| 1  | Stuf       | 15          | 2017-12-11 1... | 2017-12-11 18... |
+| 2  | Carrot     | 15          | 2017-12-11 1... | 2017-12-11 18... |
++----+------------+-------------+-----------------+------------------+
+3 rows in set
+
+
+pry(main)> q.answers = [Answer.first, Answer.last]
+  Answer Load (0.8ms)  SELECT  "answers".* FROM "answers" ORDER BY "answers"."id" ASC LIMIT $1  [["LIMIT", 1]]
+  Answer Load (0.6ms)  SELECT  "answers".* FROM "answers" ORDER BY "answers"."id" DESC LIMIT $1  [["LIMIT", 1]]
+   (0.4ms)  BEGIN
+  SQL (1.3ms)  UPDATE "answers" SET "question_id" = NULL WHERE "answers"."question_id" = $1 AND "answers"."id" IN (3, 2)  [["question_id", 15]]
+  SQL (0.7ms)  UPDATE "answers" SET "question_id" = $1, "updated_at" = $2 WHERE "answers"."id" = $3  [["question_id", 15], ["updated_at", "2017-12-11 18:12:01.191601"], ["id", 4]]
+   (6.3ms)  COMMIT
++----+-----------+-------------+------------------+------------------+
+| id | body      | question_id | created_at       | updated_at       |
++----+-----------+-------------+------------------+------------------+
+| 1  | Stuf      | 15          | 2017-12-11 17... | 2017-12-11 18... |
+| 4  | Lemon Pie | 15          | 2017-12-11 18... | 2017-12-11 18... |
++----+-----------+-------------+------------------+------------------+
+2 rows in set
+
+pry(main)> Answers.all
+NameError: uninitialized constant Answers
+from (pry):26:in `__pry__'
+[26] pry(main)> Answer.all
+  Answer Load (0.7ms)  SELECT "answers".* FROM "answers"
++----+------------+-------------+-----------------+------------------+
+| id | body       | question_id | created_at      | updated_at       |
++----+------------+-------------+-----------------+------------------+
+| 1  | Stuf       | 15          | 2017-12-11 1... | 2017-12-11 18... |
+| 3  | Carot cake |             | 2017-12-11 1... | 2017-12-11 18... |
+| 2  | Carrot     |             | 2017-12-11 1... | 2017-12-11 18... |
+| 4  | Lemon Pie  | 15          | 2017-12-11 1... | 2017-12-11 18... |
++----+------------+-------------+-----------------+------------------+
+4 rows in set
+
+pry(main)> q.answers.empty?
+=> false
+[28] pry(main)> q.answers.exists?
+ Answer Exists (0.8ms)  SELECT  1 AS one FROM "answers" WHERE "answers"."question_id" = $1 LIMIT $2  [["question_id", 15], ["LIMIT", 1]]
+=> true
+[29] pry(main)> q.answers.exists?(id:6)
+ Answer Exists (0.8ms)  SELECT  1 AS one FROM "answers" WHERE "answers"."question_id" = $1 AND "answers"."id" = $2 LIMIT $3  [["question_id", 15], ["id", 6], ["LIMIT", 1]]
+=> false
+
+pry(main)> q.answers.where('body ILIKE ?', '%Lemon%')
+  Answer Load (0.9ms)  SELECT "answers".* FROM "answers" WHERE "answers"."question_id" = $1 AND (body ILIKE '%Lemon%')  [["question_id", 15]]
++----+-----------+-------------+------------------+------------------+
+| id | body      | question_id | created_at       | updated_at       |
++----+-----------+-------------+------------------+------------------+
+| 4  | Lemon Pie | 15          | 2017-12-11 18... | 2017-12-11 18... |
++----+-----------+-------------+------------------+------------------+
+1 row in set
+
+**** baing gives a error, validate rule while without it, not
+pry(main)> q.answers.create!()
+   (0.3ms)  BEGIN
+   (0.6ms)  ROLLBACK
+ActiveRecord::RecordInvalid: Validation failed: Body can't be blank
+from /home/wellington/.rvm/gems/ruby-2.4.2/gems/activerecord-5.1.4/lib/active_record/validations.rb:78:in `raise_validation_error'
+[37] pry(main)> q.answers.create()
+   (0.5ms)  BEGIN
+   (0.5ms)  COMMIT
++----+------+-------------+------------+------------+
+| id | body | question_id | created_at | updated_at |
++----+------+-------------+------------+------------+
+|    |      | 109         |            |            |
++----+------+-------------+------------+------------+
+1 row in set
+
+
+  rails g controller answers --no-assets --no-helper
+  rails g controller comments --no-assets --no-helper
+
+  Running via Spring preloader in process 8134
+        create  app/controllers/answers_controller.rb
+        invoke  erb
+        create    app/views/answers
+        invoke  test_unit
+        create    test/controllers/answers_controller_test.rb
+
+
+
+>>>>> Authentication ----> it will generate a create_users file
+1)    rails g model user first_name last_name email password_digest
+      Running via Spring preloader in process 28318
+            invoke  active_record
+            create    db/migrate/20171212171017_create_users.rb
+            create    app/models/user.rb
+            invoke    test_unit
+            create      test/models/user_test.rb
+            create      test/fixtures/users.yml
+
+2) Edit migration file
+   t.string :email, index: {unique: true}
+3) rails db:migrate
+   now it's possible to add user to the db:
+   pry(main)> User.all
+  User Load (1.1ms)  SELECT "users".* FROM "users"
+=> []
+
+4) Gemfile  ---> uncomment the line gem 'bcrypt'
+  https://github.com/codahale/bcrypt-ruby
+  pry(main)> password = BCrypt::Password.create('why')
+  => "$2a$10$5ueJGgBPjMPNPo9fzZ/CnObAKIaFR8OXYSmxqPVd.u2tFLqTQ4bgq"
+  [7] pry(main)> password === "why"
+  => false
+  [8] pry(main)> password == "why"
+  => true
+  [9] pry(main)> password == "wh"
+  => false
+5) bundle ---> to apply the edition at Gemfile
+6) Call has_secure_password in User Model
+   we call this method in the User model
+   pry(main)> u1 = User.new first_name: 'jane', email: 'j@j.ca'
++----+------------+--------+---------------+------------+------------+
+| id | first_name | email  | password_d... | created_at | updated_at |
++----+------------+--------+---------------+------------+------------+
+|    | jane       | j@j.ca |               |            |            |
++----+------------+--------+---------------+------------+------------+
+1 row in set
+[14] pry(main)> u1.password = 'supersecret'
+=> "supersecret"
+[15] pry(main)> u1.password_confirmation = 's'
+=> "s"
+[16] pry(main)> u1.save
+   (0.3ms)  BEGIN
+   (0.4ms)  ROLLBACK
+=> false
+[17] pry(main)> u1.errors.full_messages
+=> ["Password confirmation doesn't match Password"]
+
+7) Validate file user.rb for format of fields
+https://regexone.com/
+
+8) Can seed ---> some lines to see sth
+
+9) Create a controller
+    rails g controller users --no-assets --no-helper
+    *insert actions
+10) Time to create web pages
+    insert lines in application.html for showing message after loggin and user logged
+11) Edit(insert lines) ApplicationController
+    it checks if the user already exists
+    Add lines inside if to save about session
+
+12) create session
+    rails g controller sessions --no-assets --no-helper
+Running via Spring preloader in process 434
+  create  app/controllers/sessions_controller.rb
+  invoke  erb
+  create    app/views/sessions
+  invoke  test_unit
+  create    test/controllers/sessions_controller_test.rb
+
+13) create route (resources) for session
+14) create pages for session
+    new.html
+15) SessionsController
+    *def create
+    *application.html
+    *need to put before_action in each controller we need to control
+
+16) rails g migration add_user_to_questions user:references
+    rails g migration add_user_to_products user:references
+    rails g migration add_user_to_reviews user:references
+    Running via Spring preloader in process 2846
+          invoke  active_record
+          create    db/migrate/20171212194903_add_user_to_questions.rb
+          rails g migration add_user_to_answers user:references
+          Running via Spring preloader in process 2864
+                invoke  active_record
+                create    db/migrate/20171212194928_add_user_to_answers.rb
+17) migration file to edit
+18) rails db:migrate
+19) add belongs_to :user for models
+    * for user model, insert has_many
+    *used seed to add users for both tables
+    *edited show.html of questions including user
+    *add a method in user.rb for full_name
+    *at show.html
+    *inserted & that checks if the field is nil and [deleted]
+    * add line in question and answer controller in def create  @question.user = current_user
+    * on show.html page in questions the line below in answer-list
+    <p>By <%= @question.user&.full_name || "[deleted]" %></p>
+    * it was needed to restart rails s
+
+20) run rails db:seed
+
+
+    pry(main)> a = "Bob"
+    => "Bob"
+    [2] pry(main)> a.concat("Test")
+    => "BobTest"
+    [3] pry(main)> a = nil
+    => nil
+    [4] pry(main)> a.concat("Test")
+    NoMethodError: undefined method `concat' for nil:NilClass
+    from (pry):4:in `__pry__'
+    [5] pry(main)> a.concat("Test") if a.present?
+    => nil
+    [6] pry(main)> a = adkjfakd
+    NameError: undefined local variable or method `adkjfakd' for main:Object
+    from (pry):6:in `__pry__'
+    [7] pry(main)> a = 'adkjfakd'
+    => "adkjfakd"
+    [8] pry(main)> a.concat("Test") if a.present?
+    => "adkjfakdTest"
+    [9] pry(main)> a && a.concat("Test")
+    => "adkjfakdTestTest"
+    [10] pry(main)> a=nil
+    => nil
+    [11] pry(main)> a&.concat("Test")
+    => nil
+    [12] pry(main)> a='sth'
+    => "sth"
+    [13] pry(main)> a&.concat("Test")
+    => "sthTest"
+
+
+>>>>>>>>
+https://github.com/CodeCoreYVR/bootcamp_summary_notes/blob/master/week_06/deploying_to_heroku.md
+https://github.com/CanCanCommunity/cancancan
+
+1) gem 'cancancan' ----> put inside Gemfile
+   bundle
+2) rails g cancan:ability
+3) can :manage, Question do |question| ----> put at the end of ability.rb (model)
+   *manage allow everything related of CRUD
+   *need the user sign up or won't work
+   *uncomment line 7 about 'user ||='
+   *include the line user == question.user
+4) Add if statment in show.html before edit or where we need it
+   if can?(:manage, @question)
+5) question_controller to make rule to control this use
+   * include def authorize_user  (it needs to be after find --- order matters)
+   * include before_action
+   * add line binding.pry (just to do some action in pry --- need to delete after using)
+6) answers_controller put the same above
+7) insert if in show.html from answer in the question view
+8) rails g migration add_is_admin_to_user is_admin:boolean
+   set default: false
+   rails db:migrate
+9) seeds --- added is_admin: true
+  puts "Login as admin with #{super_user.email} and password of '#{PASSWORD}'!"
+10) ability.rb uncomment if in line 11 putting is_ inside:
+    user.is_admin?
+    *below is the line done inside pry
+11) rails g controller Admin::Dashboard --no-assets --no-helper
+    * it is created Dashboard_controller inside subdirectory Admin
+    * fill out the file generated with a def for index page and a private authorize_admin
+12) routes use the namespace....put it inside
+13) create an view for dashboard
+14) add function inside dashboard_controller and before_action
+15) add if inside application.html below contact us
+
+
+
+
+pry(main)> u = User.first
+ User Load (1.1ms)  SELECT  "users".* FROM "users" ORDER BY "users"."id" ASC LIMIT $1  [["LIMIT", 1]]
++----+--------+--------+--------+--------+---------+--------+--------+
+| id | fir... | email  | pas... | cre... | upda... | las... | is_... |
++----+--------+--------+--------+--------+---------+--------+--------+
+| 27 | Jon    | js@... | $2a... | 201... | 2017... | Snow   | false  |
++----+--------+--------+--------+--------+---------+--------+--------+
+1 row in set
+[2] pry(main)> u.is_admin = true
+=> true
+[3] pry(main)> u.save
+  (0.3ms)  BEGIN
+ User Exists (1.3ms)  SELECT  1 AS one FROM "users" WHERE "users"."email" = $1 AND ("users"."id" != $2) LIMIT $3  [["email", "js@winterfell.gov"], ["id", 27], ["LIMIT", 1]]
+ SQL (0.9ms)  UPDATE "users" SET "updated_at" = $1, "is_admin" = $2 WHERE "users"."id" = $3  [["updated_at", "2017-12-13 18:15:23.297895"], ["is_admin", "t"], ["id", 27]]
+  (4.6ms)  COMMIT
+=> true
+
+>>>>>  Bootstrap  ----> it's important when updating, Gemfile will it for us
+http://sass-lang.com/
+https://github.com/twbs/bootstrap-rubygem
+
+1) add lines in Gemfile:
+  gem 'jquery-rails'
+  gem 'bootstrap'
+  bundle
+2) go to assets\javascripts folder and add some lines, what Gem will be responsible to update for us:
+  //= require jquery3
+  //= require popper
+  //= require bootstrap
+3) rename application.scss
+4) add last line @import 'bootstrap'
+
+*** bundle info jquery-rails (to see where is the folder)
+
+>>>>> Flash warning
+
+1) changed the lines about flash at application.html
+
+
+>>>>> Heroku
+
+*
+* sudo add-apt-repository "deb https://cli-assets.heroku.com/branches/stable/apt ./"
+* curl -L https://cli-assets.heroku.com/apt/release.key | sudo apt-key add -
+* sudo apt-get update
+* sudo apt-get install heroku
+
+* heroku login
+* heroku apps:create wellish2017
+* name of picture needs to have extension
+* git remote -v (first command to send the app for web)
+* git add -A
+* git commit -m 'Preparing for heroku deploy'
+* git push heroku master
+* heroku run rails db:migrate (migrate DB for heroku website)
+* heroku run rails db:seed (optional)
+* heroku logs -t -a wellish2017
+
+
+https://wellamzn.herokuapp.com/
+https://git.heroku.com/wellamzn.git
+
+
+
+
+>>>>> many to many
+
+1) rails g model like question:references user:references
+2) rails db:migrate
+3) has_many in class User model
+   the same in likes and question
+4) rails g controller likes --no-helper --no-assets
+5) routes for likes (include , shallow: true)
+6) added link to Like
+7) created line for unlike at question controller (show)
+8) added line in like controller in destroy to remove like
+9) included font-awesome
+   (it's good to have at gem file)
+10) added line *= require font-awesome in applicaton.scss
+11) ability.rb added line to allow any user likes
+12) added line application.html
+13) chanded index in question controller
+14) changed first line at index.html
+
+
+
+[30] pry(main)> history
+ 1: q = Question.last
+ 2: u = User.last
+ 3: q.likes
+ 4: u.likes
+ 5: q.likes << u
+ 6: q.likers
+ 7: u.likers
+ 8: q.likers << u
+ 9: u.liked_question
+10: u.liked_questions
+11: u.liked_questions.reload
+12: q1 = Question.find 44
+13: u.liked_questions << q1
+14: u.liked_questions
+15: u.liked_question_ids
+16: u.liked_question_ids = [237, 238]
+17: u.liked_questions
+18: q2 = Question.find 35
+19: q2 = Question.find 235
+20: Like.create(question: q2, user: u)
+21: u.liked_question
+22: u.liked_questions.reload
+23: u.liked_question
+24: u.likes.create(questions: q3)
+25: q3 = Question.find 233
+26: u.likes.create(questions: q3)
+27: u.likes.create(question: q3)
+28: u.likes.delete(q3)
+29: u.likes.destroy_all
+
+
+
+
+
+>>>>>>>>  creating Stars
+
+1) rails g model star answer:references user:references
+2) rails db:migrate
+3) has many in answer and user
+4) defined route
+5) created controller for star
+6) edited show html (attention for NOT put @answer but just answer)
+7) added lines in ability to give permissions
+
+
+
+>>>>>>>>  creating Vote
+
+1) rails g model vote user:references question:references is_up:boolean
+2) rails db:migrate
+3) rails g controller votes --no-assets --no-helper
+4) defined routes for vote
+   there's more state than more vote or unvote:
+   is_up true /false
+   destroy vote update  is_up: false......
+5) edited controller votes
+6) add code at show html -- vote up and down
+7) create function created
+8) inserted line for validate in vote model
+9) has has_many for user and question models
+10) included line in question controller inside show for user vote
+11) show html implemented if for user_signed_in
+12) created vote helper and took out code from show html
+    remaining just one line
+13) added action votes_result at question model
+14) added line in votes helper and in complemente,
+    show html added .html_safe
+
+>>>>>>>>> tagging
+
+1) rails g model tag name
+2) rails g model tagging question:references tag:references
+3) rails db:migrate
+4) some datas in seed ---
+   rails db:seed
+5) has_many for models
+6) show html line if can (crud)
+7) question controller authorize user
+
+
+
+
+
+
+[8] pry(main)> history
+1: tags.map {|tag| tag.name}
+2: tags = TAg.all
+3: tags = Tag.all
+4: tags.map {|tag| tag.name}
+5: tags.map {|tag| tag.name + tag.id.to_s }
+6: tags.map(&:name)
+7: tags.pluck(:name).join(', ')
+
+
+
+
+>>>>> mailer
+
+1) rails g mailer answer_mailer
+2) changed the email in application_mailer
+3) code added in the answer_mailer
+4) created notify html
+5) letter opener in gem file ---> gem 'letter_opener'
+   bundle
+6) added line at the development.rb in environments
+7) code added to answer controller for notify question
+8) edited notify html
+9) added line development.rs for host
+10) 2 files in initializers: app_keys to define user and password
+11) defined app password on gmail (I don't have)
+12) created setup_mail.rb inside initializers folder
+13) gem file: related to email job, being able to deliver mail latter
+    gem 'delayed_job_active_record'
+    gem 'delayed_job_web'  (see all process is schedled)
+14) rails g delayed_job:active_record
+15) rails db:migrate
+16) added line to application.rb in config folder:
+    config.active_job.queue_adapter = :delayed_job
+17) rails g job question_reminder
+18) set up question reminder in app/job
+19) put line in routes to see page to show Enqueued process
+    match "/delayed_job", to: DelayedJobWeb, anchor: false, via: [:get, :post]
+    http://localhost:3000/delayed_job/ (to see Enqueued process)
+    QuestionReminderJob  (inside rails c)
+    QuestionReminderJob.set(wait: 1.minute).perform_later
+    QuestionReminderJob.set(wait: 1.year).perform_later
+    rails jobs:work  (a job server --- needs to be working if want run pendings and can use letter opener or smtp)
+20) answer controller in create, and set deliver later
+21) changed question reminder
+22) added line in question controller/create
+23) gem file: gem 'chosen-rails'  (tags for field in the page)
+24) application js and scss added line to run chosen
+25) added file question.js in JavaScript folder
+26) edited _form
+
+
+
+added line in .gitignore
+AnswerMailer
+
+defined 2 steps check first of allow
+
+gmail password:
+http://guides.rubyonrails.org/action_mailer_basics.html#action-mailer-configuration-for-gmail
+app password
+
+gmail myaccount:
+https://myaccount.google.com/lesssecureapps?pli=1
+turned on
+
+
+
+>>>>>>> API
+
+1) added respond_to in question_controller
+2) you can call the page using the correspondent extension (html, json, xml)
+
+*** doing a separeted API
+1) rails g controller  Api::V1::Questions --no--assets --no-helper
+2) routes creating namespace
+   added code for default (JSON in this case)
+3) added action index in question controller in V1
+4) gem file added faraday
+   Bundle
+5) created folder api_client at the root from the awesome project
+6) created file cliente.rb and included code for faraday
+   ruby client.rb to see content --- rails s needed
+7) installed postman in chrome
+8) added code to question controller in V1
+9) created file inside folder views/v1/questions
+   index.json
+   added code to this file
+10) gemfile
+    gem 'active_model_serializers'
+    bundle
+11) rails g serializer question title:string body:text
+    tested in postman using a question: http://localhost:3000/api/v1/questions/302
+    added belongs_to user
+    added class UserSerializer
+    added has many
+    added function author_full_name
+12) created in postman a new tab for Question Create
+13) added function create in question_controller api
+14) disable token with:
+    rails g controller Api::Application --no-assets --no-helper --skip-template-engine
+15) added < Api to question_controller Api
+16) added text for ApplicationController Api
+17) rails g migration add_api_key_to_user api_key:string
+18) included line in the file generated with index
+19) created a private method generate api key
+    loop to check if there's no one else using the same key
+20) added before create for generate_api_key
+21) included methods in ApplicationController api:
+    current_user
+    api_key
+22) added line in show of QuestionsController api
+23) added
+
+
+
+
+
+[1] pry(main)> SecureRAndom
+NameError: uninitialized constant SecureRAndom
+from (pry):1:in `__pry__'
+[2] pry(main)> SecureRandom
+=> SecureRandom
+[3] pry(main)> SecureRandom.hex
+=> "114adfd69323117437f890016274f3cf"
+[4] pry(main)> SecureRandom.hex(32)
+=> "6780671a4f695c49251112a2d3a2b1c54136b046cd5991a7c571eb491bcd7d78"
+
+[12] pry(main)> u = User.last
+  User Load (26.7ms)  SELECT  "users".* FROM "users" ORDER BY "users"."id" DESC LIMIT $1  [["LIMIT", 1]]
++-----+-------+-------+-------+-------+-------+-------+-------+------+
+| id  | fi... | email | pa... | cr... | up... | la... | is... | api_ |
++-----+-------+-------+-------+-------+-------+-------+-------+------+
+| 122 | We... | wd... | $2... | 20... | 20... | Di... | false |      |
++-----+-------+-------+-------+-------+-------+-------+-------+------+
+1 row in set
+[13] pry(main)> u.send(:generate_api_key)
+  User Exists (0.5ms)  SELECT  1 AS one FROM "users" WHERE "users"."api_key" = $1 LIMIT $2  [["api_key", "77a75da8cf0821dcb8e0b14cf6ada7174ad2e1944f9f29832c8bcd7e483d674b"], ["LIMIT", 1]]
+=> nil
+[14] pry(main)> u.api_key
+=> "77a75da8cf0821dcb8e0b14cf6ada7174ad2e1944f9f29832c8bcd7e483d674b"
+[15] pry(main)> u.save
+   (0.2ms)  BEGIN
+  User Exists (0.5ms)  SELECT  1 AS one FROM "users" WHERE "users"."email" = $1 AND ("users"."id" != $2) LIMIT $3  [["email", "wdcunha@gmail.com"], ["id", 122], ["LIMIT", 1]]
+  SQL (333.2ms)  UPDATE "users" SET "updated_at" = $1, "api_key" = $2 WHERE "users"."id" = $3  [["updated_at", "2018-01-15 23:45:10.349616"], ["api_key", "77a75da8cf0821dcb8e0b14cf6ada7174ad2e1944f9f29832c8bcd7e483d674b"], ["id", 122]]
+   (15.4ms)  COMMIT
+=> true
+
+
+fetch('http://localhost:3000/api/v1/questions')
+	.then(response => response.text())
+	.then(text => console.log(text))
+
+**** better to use due to the format as array
+  fetch('http://localhost:3000/api/v1/questions')
+	.then(response => response.json())
+	.then(data => console.log(data))
+
+
+# bump

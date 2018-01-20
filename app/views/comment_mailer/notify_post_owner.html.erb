@@ -1,0 +1,18 @@
+  <h1>Hello <%= @post_owner.full_name %>,</h1>
+
+  <p>
+    You got an comment to your post: <%= @post.title %>
+  </p>
+
+  <p>
+    The comment is:
+  </p>
+
+  <p>
+    <%= @comment.body %>
+  </p>
+
+  <%= link_to 'Click here to view your post', post_url(@post) %>
+
+  <p>Regards,</p>
+  <p>BlogPost Team</p>
